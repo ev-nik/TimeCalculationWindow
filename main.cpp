@@ -1,8 +1,6 @@
 #include <QApplication>
 
-
 #include "MainWindow.h"
-
 
 int main(int argc, char* argv[])
 {
@@ -10,8 +8,6 @@ int main(int argc, char* argv[])
 	
 	MainWindow mW;
 	mW.show();
-	
-	
-	
+
 	return a.exec();
 }

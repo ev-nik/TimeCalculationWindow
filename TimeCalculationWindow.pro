@@ -4,6 +4,8 @@ CONFIG += c++17
 CONFIG += console
 
 SOURCES += main.cpp \
-			MainWindow.cpp
+			MainWindow.cpp \
+			TimeWorkOnOff.cpp
 			
-HEADERS += MainWindow.h
+HEADERS += MainWindow.h \
+			TimeWorkOnOff.h
