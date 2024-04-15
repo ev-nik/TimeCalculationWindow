@@ -167,6 +167,11 @@ QVector<TimeWorkOnOff> MainWindow::readFileIn(QString pathIn)
 
     pathIn = QFileDialog::getOpenFileName();
 
+    if(pathIn.isEmpty())
+    {
+        return dateTimeIn;
+    }
+
     QFile fileIn(pathIn);
 
     if(!fileIn.open(QIODevice::ReadOnly))
