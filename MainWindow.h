@@ -5,6 +5,7 @@
 #include <QPushButton>
 #include <QTableWidget>
 #include <QString>
+#include <QVector>
 
 #include <TimeWorkOnOff.h>
 
@@ -19,7 +20,12 @@ private:
     QString       pathIn;
 
 public slots:
-    void readWriteInfo();
-    void printTWidget(QVector<TimeWorkOnOff>& dateTimeIn, int& countTimeOnMSec, int& countTimeOffMSec);
+    void reloadTable(QVector<TimeWorkOnOff>& timeWorkOnOff, int& countTimeOnMSec, int& countTimeOffMSec);
+    void reloadData();
+
+public:
+    QVector<TimeWorkOnOff> readFileIn(QString pathIn);
+    void calcTime(QVector<TimeWorkOnOff>& dateTimeIn, int& countTimeOnMSec, int& countTimeOffMSec);
+
 };
 #endif // MAINWINDOW_H

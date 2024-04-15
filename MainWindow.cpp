@@ -43,10 +43,10 @@ MainWindow::MainWindow(QWidget* parent) : QWidget(parent)
     vLayout->addWidget(tWidget);
     vLayout->addLayout(hLayout);
 
-    connect(pButton, &QPushButton::clicked, this, &MainWindow::readWriteInfo);
+    connect(pButton, &QPushButton::clicked, this, &MainWindow::reloadData);
 }
 
-void MainWindow::printTWidget( QVector<TimeWorkOnOff>& timeWorkOnOff, int& countTimeOnMSec, int& countTimeOffMSec)
+void MainWindow::reloadTable( QVector<TimeWorkOnOff>& timeWorkOnOff, int& countTimeOnMSec, int& countTimeOffMSec)
 {
     int row = 0;
 
@@ -154,16 +154,13 @@ void MainWindow::printTWidget( QVector<TimeWorkOnOff>& timeWorkOnOff, int& count
         tWidget->setItem(row, 2, timeItem);
     }
 }
+//------------------------------------------------------------------------------------
 
-
-void MainWindow::readWriteInfo()
+QVector<TimeWorkOnOff> MainWindow::readFileIn(QString pathIn)
 {
-    pathIn = QFileDialog::getOpenFileName();
+    QVector<TimeWorkOnOff> dateTimeIn;
 
-    if(pathIn == "")
-    {
-        return;
-    }
+    pathIn = QFileDialog::getOpenFileName();
 
     QFile fileIn(pathIn);
 
@@ -174,10 +171,8 @@ void MainWindow::readWriteInfo()
                              QString("Не удалось открыть файл: %1").arg(pathIn),
                              QMessageBox::Close,
                              QMessageBox::Close);
-        return;
+        return dateTimeIn;
     }
-
-    QVector<TimeWorkOnOff> dateTimeIn;
 
     QTextStream readStream(&fileIn);
 
@@ -203,9 +198,15 @@ void MainWindow::readWriteInfo()
         dateTimeIn.append(tWork);
     }
 
-    int countTimeOnMSec  = 0;
-    int countTimeOffMSec = 0;
-    int sizeVec          = dateTimeIn.count();
+    return dateTimeIn;
+}
+//------------------------------------------------------------------------------------
+
+void MainWindow::calcTime(QVector<TimeWorkOnOff>& dateTimeIn, int& countTimeOnMSec, int& countTimeOffMSec)
+{
+    countTimeOnMSec  = 0;
+    countTimeOffMSec = 0;
+    int sizeVec      = dateTimeIn.count();
 
     if(dateTimeIn[0].status)
     {
@@ -258,8 +259,16 @@ void MainWindow::readWriteInfo()
     {
         countTimeOffMSec += dateTimeIn[ lastIndex ].timeWorkMSec;
     }
-
-    printTWidget(dateTimeIn, countTimeOnMSec, countTimeOffMSec);
 }
+//------------------------------------------------------------------------------------
 
+void MainWindow::reloadData()
+{
+    QVector<TimeWorkOnOff> timeWorkOnOff = readFileIn(pathIn);
 
+    int countTimeOnMSec  = 0;
+    int countTimeOffMSec = 0;
+
+    calcTime   (timeWorkOnOff, countTimeOnMSec, countTimeOffMSec);
+    reloadTable(timeWorkOnOff, countTimeOnMSec, countTimeOffMSec);
+}

@@ -13,5 +13,6 @@ public:
     bool      status;
     int       timeWorkMSec;
     int       countSwitch;
+
 };
 #endif // TIMEWORKONOFF_H
