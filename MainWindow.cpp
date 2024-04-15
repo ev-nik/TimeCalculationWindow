@@ -48,6 +48,11 @@ MainWindow::MainWindow(QWidget* parent) : QWidget(parent)
 
 void MainWindow::reloadTable( QVector<TimeWorkOnOff>& timeWorkOnOff, int& countTimeOnMSec, int& countTimeOffMSec)
 {
+    if(timeWorkOnOff.isEmpty())
+    {
+        return;
+    }
+
     int row = 0;
 
     for(int i = 0; i < timeWorkOnOff.count(); i++)
@@ -207,6 +212,11 @@ void MainWindow::calcTime(QVector<TimeWorkOnOff>& dateTimeIn, int& countTimeOnMS
     countTimeOnMSec  = 0;
     countTimeOffMSec = 0;
     int sizeVec      = dateTimeIn.count();
+
+    if(dateTimeIn.isEmpty())
+    {
+        return;
+    }
 
     if(dateTimeIn[0].status)
     {
