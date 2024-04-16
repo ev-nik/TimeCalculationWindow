@@ -48,6 +48,11 @@ MainWindow::MainWindow(QWidget* parent) : QWidget(parent)
 
 void MainWindow::reloadTable( QVector<TimeWorkOnOff>& timeWorkOnOff, int& countTimeOnMSec, int& countTimeOffMSec)
 {
+    if(tWidget->rowCount() !=0)
+    {
+        tWidget->setRowCount(0);
+    }
+
     if(timeWorkOnOff.isEmpty())
     {
         return;

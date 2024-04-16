@@ -26,6 +26,5 @@ public slots:
 public:
     QVector<TimeWorkOnOff> readFileIn(QString pathIn);
     void calcTime(QVector<TimeWorkOnOff>& dateTimeIn, int& countTimeOnMSec, int& countTimeOffMSec);
-
 };
 #endif // MAINWINDOW_H
