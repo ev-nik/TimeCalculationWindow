@@ -96,13 +96,20 @@ void MainWindow::reloadTable( QVector<TimeWorkOnOff>& timeWorkOnOff, int& countT
         tWidget->setItem(row, 2, timeItem);
         tWidget->setItem(row, 3, countSwitcItem);
         row++;
-                // стиль css цвет текста    цвет фона
-        val += "<tr style=\"color:#8B0000; background-color:green;\">";
 
+        val += "<tr>";
         //              сдвиг влево
-        val += QString("<td align=left>%1</td>")  .arg(timeWorkOnOff[i].dateTime.toString("dd.MM.yyyy hh:mm:ss"));
-        val += QString("<td align=center>%1</td>").arg(value);
-        val += QString("<td align=right>%1</td>") .arg(QTime::fromMSecsSinceStartOfDay(timeWorkOnOff[i].timeWorkMSec).toString("hh:mm:ss"));
+        val += QString("<td align=center>%1</td>") .arg(timeWorkOnOff[i].dateTime.toString("dd.MM.yyyy hh:mm:ss"));
+        if(value == "On")
+        {
+            val += QString("<td style=\"color:green;\" align=center>%1</td>").arg(value);
+        }
+        else
+        {
+            val += QString("<td style=\"color:red;\" align=center>%1</td>").arg(value);
+        }
+
+        val += QString("<td align=center>%1</td>") .arg(QTime::fromMSecsSinceStartOfDay(timeWorkOnOff[i].timeWorkMSec).toString("hh:mm:ss"));
         val += QString("<td width=10%>%1</td>")   .arg(timeWorkOnOff[i].countSwitch);
         val += "</tr>";
     }
@@ -133,8 +140,8 @@ void MainWindow::reloadTable( QVector<TimeWorkOnOff>& timeWorkOnOff, int& countT
         row++;
 
         val += "<tr>";
-        val += "<td>Total</td>";
-        val += "<td>On</td>";
+        val += "<td>Всего</td>";
+        val += "<td style=\"color:green;\">On</td>";
                             // объединить ячейки по колонкам
         val += QString("<td colspan=2>%1</td>").arg(QTime::fromMSecsSinceStartOfDay(countTimeOnMSec).toString("hh:mm:ss"));
         val += "</tr>";
@@ -157,8 +164,8 @@ void MainWindow::reloadTable( QVector<TimeWorkOnOff>& timeWorkOnOff, int& countT
         row++;
 
         val += "<tr>";
-        val += "<td>Total</td>";
-        val += "<td>Off</td>";
+        val += "<td>Всего</td>";
+        val += "<td style=\"color:red;\">Off</td>";
         val += QString("<td colspan=2>%1</td>").arg(QTime::fromMSecsSinceStartOfDay(countTimeOffMSec).toString("hh:mm:ss"));
         val += "</tr>";
     }
@@ -197,8 +204,8 @@ void MainWindow::reloadTable( QVector<TimeWorkOnOff>& timeWorkOnOff, int& countT
         row++;
 
         val += "<tr>";
-        val += "<td>Medium</td>";
-        val += "<td>On</td>";
+        val += "<td>Среднее</td>";
+        val += "<td style=\"color:green;\">On</td>";
         val += QString("<td colspan=2>%1</td>").arg(QTime::fromMSecsSinceStartOfDay(mediumOn).toString("hh:mm:ss"));
         val += "</tr>";
     }
@@ -218,8 +225,8 @@ void MainWindow::reloadTable( QVector<TimeWorkOnOff>& timeWorkOnOff, int& countT
         tWidget->setItem(row, 2, timeItem);
 
         val += "<tr>";
-        val += "<td>Medium</td>";
-        val += "<td>Off</td>";
+        val += "<td>Среднее</td>";
+        val += "<td style=\"color:red;\">Off</td>";
         val += QString("<td colspan=2>%1</td>").arg(QTime::fromMSecsSinceStartOfDay(mediumOff).toString("hh:mm:ss"));
         val += "</tr>";
     }
