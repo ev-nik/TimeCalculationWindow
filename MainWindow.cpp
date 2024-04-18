@@ -18,7 +18,7 @@ enum
 
 MainWindow::MainWindow(QWidget* parent) : QWidget(parent)
 {
-    setGeometry(40, 40, 500, 600);
+    setGeometry(40, 40, 1150, 600);
     setWindowTitle("MainWindow");
 
     tWidget = new QTableWidget();
@@ -33,14 +33,21 @@ MainWindow::MainWindow(QWidget* parent) : QWidget(parent)
 //  Устанавливаем режим растяжения чтоб колонки растягивались равномерно
     headerView->setSectionResizeMode(QHeaderView::Stretch);
 
+    tEdit = new QTextEdit();
+
     pButton = new QPushButton();
     pButton->setText("Выбрать файл");
     QHBoxLayout* hLayout = new QHBoxLayout();
     hLayout->addStretch();
     hLayout->addWidget(pButton);
 
+    QHBoxLayout* hLayout1 = new QHBoxLayout();
+    hLayout1->addWidget(tWidget);
+    hLayout1->addWidget(tEdit);
+
+
     QVBoxLayout* vLayout = new QVBoxLayout(this);
-    vLayout->addWidget(tWidget);
+    vLayout->addLayout(hLayout1);
     vLayout->addLayout(hLayout);
 
     connect(pButton, &QPushButton::clicked, this, &MainWindow::reloadData);
@@ -58,11 +65,19 @@ void MainWindow::reloadTable( QVector<TimeWorkOnOff>& timeWorkOnOff, int& countT
         return;
     }
 
+    QString val = "<table border=1 width=100% height=100% cellspacing=-1 cellpadding=4>";
+    val += "<tr>";
+    val += "<th>Дата и время</th>";
+    val += "<th>Состояние</th>";
+    val += "<th>Время работы</th>";
+    val += "<th>Номер переключения</th>";
+    val += "</tr>";
+
     int row = 0;
 
     for(int i = 0; i < timeWorkOnOff.count(); i++)
     {
-        QString val = timeWorkOnOff[i].status ? "On" : "Off"; // тернарный оператор (вместо if/else)
+        QString value = timeWorkOnOff[i].status ? "On" : "Off"; // тернарный оператор (вместо if/else)
 
         QTableWidgetItem* dateTimeItem    = new QTableWidgetItem();
         QTableWidgetItem* switchItem      = new QTableWidgetItem();
@@ -70,7 +85,7 @@ void MainWindow::reloadTable( QVector<TimeWorkOnOff>& timeWorkOnOff, int& countT
         QTableWidgetItem* countSwitcItem  = new QTableWidgetItem();
 
         dateTimeItem  ->setData(Qt::DisplayRole, timeWorkOnOff[i].dateTime.toString("dd.MM.yyyy hh:mm:ss"));
-        switchItem    ->setData(Qt::DisplayRole, val);
+        switchItem    ->setData(Qt::DisplayRole, value);
         timeItem      ->setData(Qt::DisplayRole, QTime::fromMSecsSinceStartOfDay(timeWorkOnOff[i].timeWorkMSec).toString("hh:mm:ss"));
         countSwitcItem->setData(Qt::DisplayRole, timeWorkOnOff[i].countSwitch);
 
@@ -81,7 +96,26 @@ void MainWindow::reloadTable( QVector<TimeWorkOnOff>& timeWorkOnOff, int& countT
         tWidget->setItem(row, 2, timeItem);
         tWidget->setItem(row, 3, countSwitcItem);
         row++;
+                // стиль css цвет текста    цвет фона
+        val += "<tr style=\"color:#8B0000; background-color:green;\">";
+
+        //              сдвиг влево
+        val += QString("<td align=left>%1</td>")  .arg(timeWorkOnOff[i].dateTime.toString("dd.MM.yyyy hh:mm:ss"));
+        val += QString("<td align=center>%1</td>").arg(value);
+        val += QString("<td align=right>%1</td>") .arg(QTime::fromMSecsSinceStartOfDay(timeWorkOnOff[i].timeWorkMSec).toString("hh:mm:ss"));
+        val += QString("<td width=10%>%1</td>")   .arg(timeWorkOnOff[i].countSwitch);
+        val += "</tr>";
     }
+
+    val += "</table>";
+
+            // Перенос строки
+    val += "<br/>";
+
+    val += "<table border=1 width=100% height=100% cellspacing=-1 cellpadding=4>";
+
+
+
     {
         QTableWidgetItem* titleItem  = new QTableWidgetItem();
         QTableWidgetItem* switchItem = new QTableWidgetItem();
@@ -97,6 +131,14 @@ void MainWindow::reloadTable( QVector<TimeWorkOnOff>& timeWorkOnOff, int& countT
         tWidget->setItem(row, 1, switchItem);
         tWidget->setItem(row, 2, timeItem);
         row++;
+
+        val += "<tr>";
+        val += "<td>Total</td>";
+        val += "<td>On</td>";
+                            // объединить ячейки по колонкам
+        val += QString("<td colspan=2>%1</td>").arg(QTime::fromMSecsSinceStartOfDay(countTimeOnMSec).toString("hh:mm:ss"));
+        val += "</tr>";
+
     }
     {
         QTableWidgetItem* titleItem  = new QTableWidgetItem();
@@ -113,6 +155,12 @@ void MainWindow::reloadTable( QVector<TimeWorkOnOff>& timeWorkOnOff, int& countT
         tWidget->setItem(row, 1, switchItem);
         tWidget->setItem(row, 2, timeItem);
         row++;
+
+        val += "<tr>";
+        val += "<td>Total</td>";
+        val += "<td>Off</td>";
+        val += QString("<td colspan=2>%1</td>").arg(QTime::fromMSecsSinceStartOfDay(countTimeOffMSec).toString("hh:mm:ss"));
+        val += "</tr>";
     }
 
     int mediumOn;
@@ -147,6 +195,12 @@ void MainWindow::reloadTable( QVector<TimeWorkOnOff>& timeWorkOnOff, int& countT
         tWidget->setItem(row, 1, switchItem);
         tWidget->setItem(row, 2, timeItem);
         row++;
+
+        val += "<tr>";
+        val += "<td>Medium</td>";
+        val += "<td>On</td>";
+        val += QString("<td colspan=2>%1</td>").arg(QTime::fromMSecsSinceStartOfDay(mediumOn).toString("hh:mm:ss"));
+        val += "</tr>";
     }
     {
         QTableWidgetItem* titleItem  = new QTableWidgetItem();
@@ -162,7 +216,16 @@ void MainWindow::reloadTable( QVector<TimeWorkOnOff>& timeWorkOnOff, int& countT
         tWidget->setItem(row, 0, titleItem);
         tWidget->setItem(row, 1, switchItem);
         tWidget->setItem(row, 2, timeItem);
+
+        val += "<tr>";
+        val += "<td>Medium</td>";
+        val += "<td>Off</td>";
+        val += QString("<td colspan=2>%1</td>").arg(QTime::fromMSecsSinceStartOfDay(mediumOff).toString("hh:mm:ss"));
+        val += "</tr>";
     }
+
+    val += "</table>";
+    tEdit->setText(val);
 }
 //------------------------------------------------------------------------------------
 

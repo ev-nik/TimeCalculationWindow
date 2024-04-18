@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include <QPushButton>
+#include <QTextEdit>
 #include <QTableWidget>
 #include <QString>
 #include <QVector>
@@ -15,8 +16,10 @@ public:
     MainWindow(QWidget* parent = nullptr);
 
 private:
-    QPushButton*  pButton;
     QTableWidget* tWidget;
+    QTextEdit*    tEdit;
+    QPushButton*  pButton;
+
     QString       pathIn;
 
 public slots:
