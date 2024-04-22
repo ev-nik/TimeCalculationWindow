@@ -9,6 +9,8 @@
 #include <QVector>
 #include <QTextStream>
 #include <QHeaderView>
+#include <QDebug>
+#include <QStringList>
 
 enum
 {
@@ -55,15 +57,13 @@ MainWindow::MainWindow(QWidget* parent) : QWidget(parent)
 
 void MainWindow::reloadTable( QVector<TimeWorkOnOff>& timeWorkOnOff, int& countTimeOnMSec, int& countTimeOffMSec)
 {
-    if(tWidget->rowCount() !=0)
-    {
-        tWidget->setRowCount(0);
-    }
+    tEdit->clear();
 
     if(timeWorkOnOff.isEmpty())
     {
         return;
     }
+
 
     QString val = "<table border=1 width=100% height=100% cellspacing=-1 cellpadding=4>";
     val += "<tr>";
@@ -85,6 +85,16 @@ void MainWindow::reloadTable( QVector<TimeWorkOnOff>& timeWorkOnOff, int& countT
         QTableWidgetItem* countSwitcItem  = new QTableWidgetItem();
 
         dateTimeItem  ->setData(Qt::DisplayRole, timeWorkOnOff[i].dateTime.toString("dd.MM.yyyy hh:mm:ss"));
+
+        if(timeWorkOnOff[i].status)
+        {
+            switchItem->setData(Qt::ForegroundRole, QBrush(Qt::green));
+        }
+        else
+        {
+            switchItem->setData(Qt::ForegroundRole, QBrush(Qt::red));
+        }
+
         switchItem    ->setData(Qt::DisplayRole, value);
         timeItem      ->setData(Qt::DisplayRole, QTime::fromMSecsSinceStartOfDay(timeWorkOnOff[i].timeWorkMSec).toString("hh:mm:ss"));
         countSwitcItem->setData(Qt::DisplayRole, timeWorkOnOff[i].countSwitch);
@@ -120,8 +130,11 @@ void MainWindow::reloadTable( QVector<TimeWorkOnOff>& timeWorkOnOff, int& countT
     val += "<br/>";
 
     val += "<table border=1 width=100% height=100% cellspacing=-1 cellpadding=4>";
-
-
+    val += "<tr>";
+    val += "<th>Продолжительность работы</th>";
+    val += "<th>Состояние</th>";
+    val += "<th>Время работы</th>";
+    val += "</tr>";
 
     {
         QTableWidgetItem* titleItem  = new QTableWidgetItem();
@@ -129,6 +142,7 @@ void MainWindow::reloadTable( QVector<TimeWorkOnOff>& timeWorkOnOff, int& countT
         QTableWidgetItem* timeItem   = new QTableWidgetItem();
 
         titleItem ->setData(Qt::DisplayRole, "Total");
+        switchItem->setForeground(Qt::green);
         switchItem->setData(Qt::DisplayRole, "On");
         timeItem  ->setData(Qt::DisplayRole, QTime::fromMSecsSinceStartOfDay(countTimeOnMSec). toString("hh:mm:ss"));
 
@@ -145,16 +159,16 @@ void MainWindow::reloadTable( QVector<TimeWorkOnOff>& timeWorkOnOff, int& countT
                             // объединить ячейки по колонкам
         val += QString("<td colspan=2>%1</td>").arg(QTime::fromMSecsSinceStartOfDay(countTimeOnMSec).toString("hh:mm:ss"));
         val += "</tr>";
-
     }
     {
         QTableWidgetItem* titleItem  = new QTableWidgetItem();
         QTableWidgetItem* switchItem = new QTableWidgetItem();
         QTableWidgetItem* timeItem   = new QTableWidgetItem();
 
-        titleItem->  setData(Qt::DisplayRole, "Total");
-        switchItem->  setData(Qt::DisplayRole, "Off");
-        timeItem->setData(Qt::DisplayRole, QTime::fromMSecsSinceStartOfDay(countTimeOffMSec). toString("hh:mm:ss"));
+        titleItem ->setData(Qt::DisplayRole, "Total");
+        switchItem->setForeground(Qt::red);
+        switchItem->setData(Qt::DisplayRole, "Off");
+        timeItem  ->setData(Qt::DisplayRole, QTime::fromMSecsSinceStartOfDay(countTimeOffMSec). toString("hh:mm:ss"));
 
         tWidget->insertRow(row);
 
@@ -192,9 +206,10 @@ void MainWindow::reloadTable( QVector<TimeWorkOnOff>& timeWorkOnOff, int& countT
         QTableWidgetItem* switchItem = new QTableWidgetItem();
         QTableWidgetItem* timeItem   = new QTableWidgetItem();
 
-        titleItem-> setData(Qt::DisplayRole, "Medium");
+        titleItem ->setData(Qt::DisplayRole, "Medium");
+        switchItem->setForeground(Qt::green);
         switchItem->setData(Qt::DisplayRole, "On");
-        timeItem->  setData(Qt::DisplayRole, QTime::QTime::fromMSecsSinceStartOfDay(mediumOn). toString("hh:mm:ss"));
+        timeItem  ->setData(Qt::DisplayRole, QTime::QTime::fromMSecsSinceStartOfDay(mediumOn). toString("hh:mm:ss"));
 
         tWidget->insertRow(row);
 
@@ -215,6 +230,7 @@ void MainWindow::reloadTable( QVector<TimeWorkOnOff>& timeWorkOnOff, int& countT
         QTableWidgetItem* timeItem   = new QTableWidgetItem();
 
         titleItem ->setData(Qt::DisplayRole, "Medium");
+        switchItem->setForeground(Qt::red);
         switchItem->setData(Qt::DisplayRole, "Off");
         timeItem  ->setData(Qt::DisplayRole, QTime::fromMSecsSinceStartOfDay(mediumOff).toString("hh:mm:ss"));
 
@@ -240,7 +256,10 @@ QVector<TimeWorkOnOff> MainWindow::readFileIn(QString pathIn)
 {
     QVector<TimeWorkOnOff> dateTimeIn;
 
-    pathIn = QFileDialog::getOpenFileName();
+//    pathIn = QFileDialog::getOpenFileName();
+
+    // @DEBUG
+    pathIn = "E:/temperature.csv";
 
     if(pathIn.isEmpty())
     {
@@ -362,3 +381,27 @@ void MainWindow::reloadData()
     calcTime   (timeWorkOnOff, countTimeOnMSec, countTimeOffMSec);
     reloadTable(timeWorkOnOff, countTimeOnMSec, countTimeOffMSec);
 }
+//------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -29,5 +29,6 @@ public slots:
 public:
     QVector<TimeWorkOnOff> readFileIn(QString pathIn);
     void calcTime(QVector<TimeWorkOnOff>& dateTimeIn, int& countTimeOnMSec, int& countTimeOffMSec);
+    void saveInfo(QTableWidget* tWidget);
 };
 #endif // MAINWINDOW_H
