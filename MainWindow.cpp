@@ -159,7 +159,7 @@ void MainWindow::reloadTable( QVector<TimeWorkOnOff>& timeWorkOnOff, int& countT
         val += "<td>Всего</td>";
         val += "<td style=\"color:green;\">On</td>";
                             // объединить ячейки по колонкам
-        val += QString("<td colspan=2>%1</td>").arg(QTime::fromMSecsSinceStartOfDay(countTimeOnMSec).toString("hh:mm:ss"));
+        val += QString("<td>%1</td>").arg(QTime::fromMSecsSinceStartOfDay(countTimeOnMSec).toString("hh:mm:ss"));
         val += "</tr>";
     }
     {
@@ -182,7 +182,7 @@ void MainWindow::reloadTable( QVector<TimeWorkOnOff>& timeWorkOnOff, int& countT
         val += "<tr>";
         val += "<td>Всего</td>";
         val += "<td style=\"color:red;\">Off</td>";
-        val += QString("<td colspan=2>%1</td>").arg(QTime::fromMSecsSinceStartOfDay(countTimeOffMSec).toString("hh:mm:ss"));
+        val += QString("<td>%1</td>").arg(QTime::fromMSecsSinceStartOfDay(countTimeOffMSec).toString("hh:mm:ss"));
         val += "</tr>";
     }
 
@@ -223,7 +223,7 @@ void MainWindow::reloadTable( QVector<TimeWorkOnOff>& timeWorkOnOff, int& countT
         val += "<tr>";
         val += "<td>Среднее</td>";
         val += "<td style=\"color:green;\">On</td>";
-        val += QString("<td colspan=2>%1</td>").arg(QTime::fromMSecsSinceStartOfDay(mediumOn).toString("hh:mm:ss"));
+        val += QString("<td>%1</td>").arg(QTime::fromMSecsSinceStartOfDay(mediumOn).toString("hh:mm:ss"));
         val += "</tr>";
     }
     {
@@ -245,7 +245,7 @@ void MainWindow::reloadTable( QVector<TimeWorkOnOff>& timeWorkOnOff, int& countT
         val += "<tr>";
         val += "<td>Среднее</td>";
         val += "<td style=\"color:red;\">Off</td>";
-        val += QString("<td colspan=2>%1</td>").arg(QTime::fromMSecsSinceStartOfDay(mediumOff).toString("hh:mm:ss"));
+        val += QString("<td>%1</td>").arg(QTime::fromMSecsSinceStartOfDay(mediumOff).toString("hh:mm:ss"));
         val += "</tr>";
     }
 
