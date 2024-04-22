@@ -144,7 +144,7 @@ void MainWindow::reloadTable( QVector<TimeWorkOnOff>& timeWorkOnOff, int& countT
         QTableWidgetItem* timeItem   = new QTableWidgetItem();
 
         titleItem ->setData(Qt::DisplayRole, "Total");
-        switchItem->setForeground(Qt::green);
+        switchItem->setData(Qt::ForegroundRole, QBrush(Qt::green));
         switchItem->setData(Qt::DisplayRole, "On");
         timeItem  ->setData(Qt::DisplayRole, QTime::fromMSecsSinceStartOfDay(countTimeOnMSec). toString("hh:mm:ss"));
 
@@ -168,7 +168,7 @@ void MainWindow::reloadTable( QVector<TimeWorkOnOff>& timeWorkOnOff, int& countT
         QTableWidgetItem* timeItem   = new QTableWidgetItem();
 
         titleItem ->setData(Qt::DisplayRole, "Total");
-        switchItem->setForeground(Qt::red);
+        switchItem->setData(Qt::ForegroundRole, QBrush(Qt::red));
         switchItem->setData(Qt::DisplayRole, "Off");
         timeItem  ->setData(Qt::DisplayRole, QTime::fromMSecsSinceStartOfDay(countTimeOffMSec). toString("hh:mm:ss"));
 
@@ -209,7 +209,7 @@ void MainWindow::reloadTable( QVector<TimeWorkOnOff>& timeWorkOnOff, int& countT
         QTableWidgetItem* timeItem   = new QTableWidgetItem();
 
         titleItem ->setData(Qt::DisplayRole, "Medium");
-        switchItem->setForeground(Qt::green);
+        switchItem->setData(Qt::ForegroundRole, QBrush(Qt::green));
         switchItem->setData(Qt::DisplayRole, "On");
         timeItem  ->setData(Qt::DisplayRole, QTime::QTime::fromMSecsSinceStartOfDay(mediumOn). toString("hh:mm:ss"));
 
@@ -232,7 +232,7 @@ void MainWindow::reloadTable( QVector<TimeWorkOnOff>& timeWorkOnOff, int& countT
         QTableWidgetItem* timeItem   = new QTableWidgetItem();
 
         titleItem ->setData(Qt::DisplayRole, "Medium");
-        switchItem->setForeground(Qt::red);
+        switchItem->setData(Qt::ForegroundRole, QBrush(Qt::red));
         switchItem->setData(Qt::DisplayRole, "Off");
         timeItem  ->setData(Qt::DisplayRole, QTime::fromMSecsSinceStartOfDay(mediumOff).toString("hh:mm:ss"));
 
