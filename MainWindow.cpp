@@ -57,6 +57,8 @@ MainWindow::MainWindow(QWidget* parent) : QWidget(parent)
 
 void MainWindow::reloadTable( QVector<TimeWorkOnOff>& timeWorkOnOff, int& countTimeOnMSec, int& countTimeOffMSec)
 {
+    tWidget->setRowCount(0);
+
     tEdit->clear();
 
     if(timeWorkOnOff.isEmpty())
@@ -256,10 +258,7 @@ QVector<TimeWorkOnOff> MainWindow::readFileIn(QString pathIn)
 {
     QVector<TimeWorkOnOff> dateTimeIn;
 
-//    pathIn = QFileDialog::getOpenFileName();
-
-    // @DEBUG
-    pathIn = "E:/temperature.csv";
+    pathIn = QFileDialog::getOpenFileName();
 
     if(pathIn.isEmpty())
     {
