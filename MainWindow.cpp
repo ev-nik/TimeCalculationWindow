@@ -37,10 +37,13 @@ MainWindow::MainWindow(QWidget* parent) : QWidget(parent)
 
     tEdit = new QTextEdit();
 
+    pButton1 = new QPushButton();
+    pButton1->setText("Сохранить в csv");
     pButton = new QPushButton();
     pButton->setText("Выбрать файл");
     QHBoxLayout* hLayout = new QHBoxLayout();
     hLayout->addStretch();
+    hLayout->addWidget(pButton1);
     hLayout->addWidget(pButton);
 
     QHBoxLayout* hLayout1 = new QHBoxLayout();
@@ -52,7 +55,8 @@ MainWindow::MainWindow(QWidget* parent) : QWidget(parent)
     vLayout->addLayout(hLayout1);
     vLayout->addLayout(hLayout);
 
-    connect(pButton, &QPushButton::clicked, this, &MainWindow::reloadData);
+    connect(pButton1, &QPushButton::clicked, this, &MainWindow::saveInfo);
+    connect(pButton,  &QPushButton::clicked, this, &MainWindow::reloadData);
 }
 
 void MainWindow::reloadTable( QVector<TimeWorkOnOff>& timeWorkOnOff, int& countTimeOnMSec, int& countTimeOffMSec)
@@ -65,7 +69,6 @@ void MainWindow::reloadTable( QVector<TimeWorkOnOff>& timeWorkOnOff, int& countT
     {
         return;
     }
-
 
     QString val = "<table border=1 width=100% height=100% cellspacing=-1 cellpadding=4>";
     val += "<tr>";
@@ -254,7 +257,7 @@ void MainWindow::reloadTable( QVector<TimeWorkOnOff>& timeWorkOnOff, int& countT
 }
 //------------------------------------------------------------------------------------
 
-QVector<TimeWorkOnOff> MainWindow::readFileIn(QString pathIn)
+QVector<TimeWorkOnOff> MainWindow::readFileIn()
 {
     QVector<TimeWorkOnOff> dateTimeIn;
 
@@ -372,7 +375,7 @@ void MainWindow::calcTime(QVector<TimeWorkOnOff>& dateTimeIn, int& countTimeOnMS
 
 void MainWindow::reloadData()
 {
-    QVector<TimeWorkOnOff> timeWorkOnOff = readFileIn(pathIn);
+    QVector<TimeWorkOnOff> timeWorkOnOff = readFileIn();
 
     int countTimeOnMSec  = 0;
     int countTimeOffMSec = 0;
@@ -382,7 +385,51 @@ void MainWindow::reloadData()
 }
 //------------------------------------------------------------------------------------
 
+void MainWindow::saveInfo()
+{
+    qDebug() << pathIn;
+    QFileInfo fileInfo(pathIn);
 
+    QString pathDir = fileInfo.path();
+    QString fileName(fileInfo.baseName() + "--------out");
+    QString pathOut = QString("%1%2.csv").arg(pathDir).arg(fileName);
+
+    QFile fileOut(pathOut);
+    QFile::remove(pathOut);
+
+    if(!fileOut.open(QIODevice::WriteOnly))
+    {
+        qWarning() << Q_FUNC_INFO << pathOut << "not open";
+
+        return;
+    }
+
+        QTextStream writeStream(&fileOut);
+        QString strTable;
+
+    for(int i = 0; i < tWidget->rowCount(); i++)
+    {
+        for(int j = 0; j < tWidget->columnCount(); j++)
+        {
+            QTableWidgetItem* item = tWidget->item(i, j);
+
+            if(item == nullptr)
+            {
+                continue;
+            }
+
+            QString str = item->text();
+
+            strTable += str + ";";
+        }
+
+        strTable += "\n";
+    }
+
+    writeStream << strTable;
+
+    fileOut.close();
+}
 
 
 

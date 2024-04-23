@@ -18,16 +18,19 @@ public:
 private:
     QTableWidget* tWidget;
     QTextEdit*    tEdit;
+    QPushButton*  pButton1;
     QPushButton*  pButton;
 
     QString       pathIn;
 
 public slots:
-    void reloadTable(QVector<TimeWorkOnOff>& timeWorkOnOff, int& countTimeOnMSec, int& countTimeOffMSec);
     void reloadData();
+    void saveInfo();
 
 public:
-    QVector<TimeWorkOnOff> readFileIn(QString pathIn);
+    QVector<TimeWorkOnOff> readFileIn();
     void calcTime(QVector<TimeWorkOnOff>& dateTimeIn, int& countTimeOnMSec, int& countTimeOffMSec);
+    void reloadTable(QVector<TimeWorkOnOff>& timeWorkOnOff, int& countTimeOnMSec, int& countTimeOffMSec);
+
 };
 #endif // MAINWINDOW_H
