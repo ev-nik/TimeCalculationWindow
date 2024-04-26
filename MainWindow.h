@@ -8,7 +8,7 @@
 #include <QString>
 #include <QVector>
 
-#include <TimeWorkOnOff.h>
+#include "TimeWorkOnOff.h"
 
 class MainWindow : public QWidget
 {
@@ -18,19 +18,21 @@ public:
 private:
     QTableWidget* tWidget;
     QTextEdit*    tEdit;
-    QPushButton*  pButton1;
-    QPushButton*  pButton;
+    QPushButton*  selectFileButton;
+    QPushButton*  saveCSVButton;
+    QPushButton*  saveHTMLButton;
 
     QString       pathIn;
 
 public slots:
     void reloadData();
-    void saveInfo();
+    void saveInfoCSV();
+    void saveInfoHTML();
 
 public:
     QVector<TimeWorkOnOff> readFileIn();
-    void calcTime(QVector<TimeWorkOnOff>& dateTimeIn, int& countTimeOnMSec, int& countTimeOffMSec);
-    void reloadTable(QVector<TimeWorkOnOff>& timeWorkOnOff, int& countTimeOnMSec, int& countTimeOffMSec);
-
+    void calcTime(QVector<TimeWorkOnOff>         & dateTimeIn,    int& countTimeOnMSec, int& countTimeOffMSec);
+    void reloadTable(const QVector<TimeWorkOnOff>& timeWorkOnOff, int  countTimeOnMSec, int  countTimeOffMSec);
+    void reloadHTML(const QVector<TimeWorkOnOff> & timeWorkOnOff, int  countTimeOnMSec, int  countTimeOffMSec);
 };
 #endif // MAINWINDOW_H

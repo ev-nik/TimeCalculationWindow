@@ -1,5 +1,6 @@
 #include "MainWindow.h"
 #include "TimeWorkOnOff.h"
+//------------------------------------------------------------------------------------
 
 #include <QHBoxLayout>
 #include <QFileDialog>
@@ -11,12 +12,15 @@
 #include <QHeaderView>
 #include <QDebug>
 #include <QStringList>
+#include <QDesktopServices>
+//------------------------------------------------------------------------------------
 
 enum
 {
     DT     = 0,
     STATUS = 1
 };
+//------------------------------------------------------------------------------------
 
 MainWindow::MainWindow(QWidget* parent) : QWidget(parent)
 {
@@ -37,46 +41,43 @@ MainWindow::MainWindow(QWidget* parent) : QWidget(parent)
 
     tEdit = new QTextEdit();
 
-    pButton1 = new QPushButton();
-    pButton1->setText("Сохранить в csv");
-    pButton = new QPushButton();
-    pButton->setText("Выбрать файл");
+    selectFileButton = new QPushButton();
+    selectFileButton->setText("Выбрать файл");
+
+    saveCSVButton = new QPushButton();
+    saveCSVButton->setText("Сохранить в CSV");
+
+    saveHTMLButton = new QPushButton();
+    saveHTMLButton->setText("Сохранить в HTML");
+
     QHBoxLayout* hLayout = new QHBoxLayout();
+    hLayout->addWidget(selectFileButton);
     hLayout->addStretch();
-    hLayout->addWidget(pButton1);
-    hLayout->addWidget(pButton);
+    hLayout->addWidget(saveHTMLButton);
+    hLayout->addWidget(saveCSVButton);
 
     QHBoxLayout* hLayout1 = new QHBoxLayout();
     hLayout1->addWidget(tWidget);
     hLayout1->addWidget(tEdit);
 
-
     QVBoxLayout* vLayout = new QVBoxLayout(this);
     vLayout->addLayout(hLayout1);
     vLayout->addLayout(hLayout);
 
-    connect(pButton1, &QPushButton::clicked, this, &MainWindow::saveInfo);
-    connect(pButton,  &QPushButton::clicked, this, &MainWindow::reloadData);
+    connect(selectFileButton,  &QPushButton::clicked, this, &MainWindow::reloadData);
+    connect(saveCSVButton,     &QPushButton::clicked, this, &MainWindow::saveInfoCSV);
+    connect(saveHTMLButton,    &QPushButton::clicked, this, &MainWindow::saveInfoHTML);
 }
+//------------------------------------------------------------------------------------
 
-void MainWindow::reloadTable( QVector<TimeWorkOnOff>& timeWorkOnOff, int& countTimeOnMSec, int& countTimeOffMSec)
+void MainWindow::reloadTable(const QVector<TimeWorkOnOff>& timeWorkOnOff, int countTimeOnMSec, int countTimeOffMSec)
 {
     tWidget->setRowCount(0);
-
-    tEdit->clear();
 
     if(timeWorkOnOff.isEmpty())
     {
         return;
     }
-
-    QString val = "<table border=1 width=100% height=100% cellspacing=-1 cellpadding=4>";
-    val += "<tr>";
-    val += "<th>Дата и время</th>";
-    val += "<th>Состояние</th>";
-    val += "<th>Время работы</th>";
-    val += "<th>Номер переключения</th>";
-    val += "</tr>";
 
     int row = 0;
 
@@ -111,36 +112,7 @@ void MainWindow::reloadTable( QVector<TimeWorkOnOff>& timeWorkOnOff, int& countT
         tWidget->setItem(row, 2, timeItem);
         tWidget->setItem(row, 3, countSwitcItem);
         row++;
-
-        val += "<tr>";
-        //              сдвиг влево
-        val += QString("<td align=center>%1</td>") .arg(timeWorkOnOff[i].dateTime.toString("dd.MM.yyyy hh:mm:ss"));
-        if(value == "On")
-        {
-            val += QString("<td style=\"color:green;\" align=center>%1</td>").arg(value);
-        }
-        else
-        {
-            val += QString("<td style=\"color:red;\" align=center>%1</td>").arg(value);
-        }
-
-        val += QString("<td align=center>%1</td>") .arg(QTime::fromMSecsSinceStartOfDay(timeWorkOnOff[i].timeWorkMSec).toString("hh:mm:ss"));
-        val += QString("<td width=10%>%1</td>")   .arg(timeWorkOnOff[i].countSwitch);
-        val += "</tr>";
     }
-
-    val += "</table>";
-
-            // Перенос строки
-    val += "<br/>";
-
-    val += "<table border=1 width=100% height=100% cellspacing=-1 cellpadding=4>";
-    val += "<tr>";
-    val += "<th>Продолжительность работы</th>";
-    val += "<th>Состояние</th>";
-    val += "<th>Время работы</th>";
-    val += "</tr>";
-
     {
         QTableWidgetItem* titleItem  = new QTableWidgetItem();
         QTableWidgetItem* switchItem = new QTableWidgetItem();
@@ -157,13 +129,6 @@ void MainWindow::reloadTable( QVector<TimeWorkOnOff>& timeWorkOnOff, int& countT
         tWidget->setItem(row, 1, switchItem);
         tWidget->setItem(row, 2, timeItem);
         row++;
-
-        val += "<tr>";
-        val += "<td>Всего</td>";
-        val += "<td style=\"color:green;\">On</td>";
-                            // объединить ячейки по колонкам
-        val += QString("<td>%1</td>").arg(QTime::fromMSecsSinceStartOfDay(countTimeOnMSec).toString("hh:mm:ss"));
-        val += "</tr>";
     }
     {
         QTableWidgetItem* titleItem  = new QTableWidgetItem();
@@ -181,12 +146,6 @@ void MainWindow::reloadTable( QVector<TimeWorkOnOff>& timeWorkOnOff, int& countT
         tWidget->setItem(row, 1, switchItem);
         tWidget->setItem(row, 2, timeItem);
         row++;
-
-        val += "<tr>";
-        val += "<td>Всего</td>";
-        val += "<td style=\"color:red;\">Off</td>";
-        val += QString("<td>%1</td>").arg(QTime::fromMSecsSinceStartOfDay(countTimeOffMSec).toString("hh:mm:ss"));
-        val += "</tr>";
     }
 
     int mediumOn;
@@ -222,12 +181,6 @@ void MainWindow::reloadTable( QVector<TimeWorkOnOff>& timeWorkOnOff, int& countT
         tWidget->setItem(row, 1, switchItem);
         tWidget->setItem(row, 2, timeItem);
         row++;
-
-        val += "<tr>";
-        val += "<td>Среднее</td>";
-        val += "<td style=\"color:green;\">On</td>";
-        val += QString("<td>%1</td>").arg(QTime::fromMSecsSinceStartOfDay(mediumOn).toString("hh:mm:ss"));
-        val += "</tr>";
     }
     {
         QTableWidgetItem* titleItem  = new QTableWidgetItem();
@@ -244,7 +197,101 @@ void MainWindow::reloadTable( QVector<TimeWorkOnOff>& timeWorkOnOff, int& countT
         tWidget->setItem(row, 0, titleItem);
         tWidget->setItem(row, 1, switchItem);
         tWidget->setItem(row, 2, timeItem);
+    }
+}
+//------------------------------------------------------------------------------------
 
+void MainWindow::reloadHTML(const QVector<TimeWorkOnOff>& timeWorkOnOff, int countTimeOnMSec, int countTimeOffMSec)
+{
+    tEdit->clear();
+
+    if(timeWorkOnOff.isEmpty())
+    {
+        return;
+    }
+
+    QString val = "<table border=1 width=100% height=100% cellspacing=-1 cellpadding=4>";
+    val += "<tr>";
+    val += "<th>Дата и время</th>";
+    val += "<th>Состояние</th>";
+    val += "<th>Время работы</th>";
+    val += "<th>Номер переключения</th>";
+    val += "</tr>";
+
+    for(int i = 0; i < timeWorkOnOff.count(); i++)
+    {
+        QString value = timeWorkOnOff[i].status ? "On" : "Off"; // тернарный оператор (вместо if/else)
+
+        val += "<tr>";
+        //              сдвиг влево
+        val += QString("<td align=center>%1</td>") .arg(timeWorkOnOff[i].dateTime.toString("dd.MM.yyyy hh:mm:ss"));
+        if(value == "On")
+        {
+            val += QString("<td style=\"color:green;\" align=center>%1</td>").arg(value);
+        }
+        else
+        {
+            val += QString("<td style=\"color:red;\" align=center>%1</td>").arg(value);
+        }
+
+        val += QString("<td align=center>%1</td>") .arg(QTime::fromMSecsSinceStartOfDay(timeWorkOnOff[i].timeWorkMSec).toString("hh:mm:ss"));
+        val += QString("<td width=10%>%1</td>")   .arg(timeWorkOnOff[i].countSwitch);
+        val += "</tr>";
+    }
+
+    val += "</table>";
+
+            // Перенос строки
+    val += "<br/>";
+
+    val += "<table border=1 width=100% height=100% cellspacing=-1 cellpadding=4>";
+    val += "<tr>";
+    val += "<th>Продолжительность работы</th>";
+    val += "<th>Состояние</th>";
+    val += "<th>Время работы</th>";
+    val += "</tr>";
+
+    {
+        val += "<tr>";
+        val += "<td>Всего</td>";
+        val += "<td style=\"color:green;\">On</td>";
+                            // объединить ячейки по колонкам
+        val += QString("<td>%1</td>").arg(QTime::fromMSecsSinceStartOfDay(countTimeOnMSec).toString("hh:mm:ss"));
+        val += "</tr>";
+    }
+    {
+        val += "<tr>";
+        val += "<td>Всего</td>";
+        val += "<td style=\"color:red;\">Off</td>";
+        val += QString("<td>%1</td>").arg(QTime::fromMSecsSinceStartOfDay(countTimeOffMSec).toString("hh:mm:ss"));
+        val += "</tr>";
+    }
+
+    int mediumOn;
+    int mediumOff;
+    int sizeVec   = timeWorkOnOff.count();
+    int lastIndex = sizeVec - 1;
+
+    for(int i = lastIndex - 1; i <= lastIndex; i++)
+    {
+        if(timeWorkOnOff[i].status)
+        {
+            mediumOn  = countTimeOnMSec  / timeWorkOnOff[i].countSwitch;
+        }
+
+        if(!timeWorkOnOff[i].status)
+        {
+            mediumOff = countTimeOffMSec / timeWorkOnOff[i].countSwitch;
+        }
+    }
+    {
+        val += "<tr>";
+        val += "<td>Среднее</td>";
+        val += "<td style=\"color:green;\">On</td>";
+        val += QString("<td>%1</td>").arg(QTime::fromMSecsSinceStartOfDay(mediumOn).toString("hh:mm:ss"));
+        val += "</tr>";
+    }
+    {
         val += "<tr>";
         val += "<td>Среднее</td>";
         val += "<td style=\"color:red;\">Off</td>";
@@ -375,46 +422,52 @@ void MainWindow::calcTime(QVector<TimeWorkOnOff>& dateTimeIn, int& countTimeOnMS
 
 void MainWindow::reloadData()
 {
-    QVector<TimeWorkOnOff> timeWorkOnOff = readFileIn();
+    QVector<TimeWorkOnOff> timeWorkOnOff;
+    timeWorkOnOff = readFileIn();
 
     int countTimeOnMSec  = 0;
     int countTimeOffMSec = 0;
 
     calcTime   (timeWorkOnOff, countTimeOnMSec, countTimeOffMSec);
     reloadTable(timeWorkOnOff, countTimeOnMSec, countTimeOffMSec);
+    reloadHTML(timeWorkOnOff, countTimeOnMSec, countTimeOffMSec);
 }
 //------------------------------------------------------------------------------------
 
-void MainWindow::saveInfo()
+void MainWindow::saveInfoCSV()
 {
-    qDebug() << pathIn;
-    QFileInfo fileInfo(pathIn);
+    QString pathOutCSV = QFileDialog::getSaveFileName();
 
-    QString pathDir = fileInfo.path();
-    QString fileName(fileInfo.baseName() + "--------out");
-    QString pathOut = QString("%1%2.csv").arg(pathDir).arg(fileName);
-
-    QFile fileOut(pathOut);
-    QFile::remove(pathOut);
-
-    if(!fileOut.open(QIODevice::WriteOnly))
+    if(pathOutCSV.isEmpty())
     {
-        qWarning() << Q_FUNC_INFO << pathOut << "not open";
-
         return;
     }
 
-        QTextStream writeStream(&fileOut);
-        QString strTable;
+    QFile fileOut(pathOutCSV);
+    QFile::remove(pathOutCSV);
 
-    for(int i = 0; i < tWidget->rowCount(); i++)
+    if(!fileOut.open(QIODevice::WriteOnly))
     {
-        for(int j = 0; j < tWidget->columnCount(); j++)
+        QMessageBox::warning(this,
+                             "Ошибка",
+                             QString("Не удалось сохранить файл: %1").arg(pathOutCSV),
+                             QMessageBox::Close,
+                             QMessageBox::Close);
+        return;
+    }
+
+    QTextStream writeStream(&fileOut);
+    QString strTable;
+
+    for(int row = 0; row < tWidget->rowCount(); row++)
+    {
+        for(int col = 0; col < tWidget->columnCount(); col++)
         {
-            QTableWidgetItem* item = tWidget->item(i, j);
+            QTableWidgetItem* item = tWidget->item(row, col);
 
             if(item == nullptr)
             {
+                strTable += ";";
                 continue;
             }
 
@@ -430,6 +483,60 @@ void MainWindow::saveInfo()
 
     fileOut.close();
 }
+//------------------------------------------------------------------------------------
+
+void MainWindow::saveInfoHTML()
+{
+    QString pathOutHTML = QFileDialog::getSaveFileName();
+
+    if(pathOutHTML.isEmpty())
+    {
+        return;
+    }
+
+    QFile fileOut(pathOutHTML);
+    QFile::remove(pathOutHTML);
+
+    if(!fileOut.open(QIODevice::WriteOnly))
+    {
+        QMessageBox::warning(this,
+                             "Ошибка",
+                             QString("Не удалось сохранить файл: %1").arg(pathOutHTML),
+                             QMessageBox::Close,
+                             QMessageBox::Close);
+        return;
+    }
+
+    QTextStream writeStream(&fileOut);
+
+    writeStream << tEdit->toHtml();
+
+    fileOut.close();
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
