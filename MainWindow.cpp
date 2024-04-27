@@ -308,7 +308,7 @@ QVector<TimeWorkOnOff> MainWindow::readFileIn()
 {
     QVector<TimeWorkOnOff> dateTimeIn;
 
-    pathIn = QFileDialog::getOpenFileName();
+    pathIn = QFileDialog::getOpenFileName(this, "Открыть файл", "E:/");
 
     if(pathIn.isEmpty())
     {
@@ -487,7 +487,7 @@ void MainWindow::saveInfoCSV()
 
 void MainWindow::saveInfoHTML()
 {
-    QString pathOutHTML = QFileDialog::getSaveFileName();
+    QString pathOutHTML = QFileDialog::getSaveFileName(this, "Сохранить файл", "Temper.csv");
 
     if(pathOutHTML.isEmpty())
     {
