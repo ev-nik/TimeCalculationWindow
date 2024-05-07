@@ -436,6 +436,9 @@ void MainWindow::reloadData()
 
 void MainWindow::saveInfoCSV()
 {
+    // @TODO: добавить путь на рабочий стол
+    // @TODO: добавить имя базового файла в путь сохранения
+
     QString pathOutCSV = QFileDialog::getSaveFileName(this, "Сохранение", "Temper-out.csv");
 
     if(pathOutCSV.isEmpty())
@@ -480,14 +483,19 @@ void MainWindow::saveInfoCSV()
     }
 
     writeStream << strTable;
-
     fileOut.close();
+
+    // @TODO: Добавить QMessageBox на открытие файла
 }
 //------------------------------------------------------------------------------------
 
 void MainWindow::saveInfoHTML()
 {
-    QString pathOutHTML = QFileDialog::getSaveFileName(this, "Сохранение", "Temper-out.html");
+    // @TODO: добавить имя базового файла в путь сохранения
+
+    QString defaultPath = QString("%1/Temper-out.html").arg(QStandardPaths::writableLocation(QStandardPaths::DesktopLocation));
+
+    QString pathOutHTML = QFileDialog::getSaveFileName(this, "Сохранение", defaultPath);
 
     if(pathOutHTML.isEmpty())
     {
