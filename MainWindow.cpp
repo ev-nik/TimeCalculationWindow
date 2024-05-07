@@ -436,7 +436,7 @@ void MainWindow::reloadData()
 
 void MainWindow::saveInfoCSV()
 {
-    QString pathOutCSV = QFileDialog::getSaveFileName();
+    QString pathOutCSV = QFileDialog::getSaveFileName(this, "Сохранение", "Temper-out.csv");
 
     if(pathOutCSV.isEmpty())
     {
@@ -487,7 +487,7 @@ void MainWindow::saveInfoCSV()
 
 void MainWindow::saveInfoHTML()
 {
-    QString pathOutHTML = QFileDialog::getSaveFileName(this, "Сохранить файл", "Temper.csv");
+    QString pathOutHTML = QFileDialog::getSaveFileName(this, "Сохранение", "Temper-out.html");
 
     if(pathOutHTML.isEmpty())
     {
@@ -508,12 +508,21 @@ void MainWindow::saveInfoHTML()
     }
 
     QTextStream writeStream(&fileOut);
-
     writeStream << tEdit->toHtml();
-
     fileOut.close();
-}
 
+    QMessageBox::StandardButton clickedButton = QMessageBox::information(this,
+                                                                         "Информация",
+                                                                         QString("Файл успешно сохранен.\nОткрыть его?"),
+                                                                         QMessageBox::Open,
+                                                                         QMessageBox::Close);
+
+    if(clickedButton == QMessageBox::Open)
+    {
+        QDesktopServices::openUrl( QUrl::fromLocalFile(pathOutHTML) );
+    }
+}
+//------------------------------------------------------------------------------------
 
 
 
