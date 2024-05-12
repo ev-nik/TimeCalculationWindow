@@ -436,10 +436,11 @@ void MainWindow::reloadData()
 
 void MainWindow::saveInfoCSV()
 {
-    // @TODO: добавить путь на рабочий стол
     // @TODO: добавить имя базового файла в путь сохранения
 
-    QString pathOutCSV = QFileDialog::getSaveFileName(this, "Сохранение", "Temper-out.csv");
+    QString defaultPath = QString("%1/Temper-out.csv").arg(QStandardPaths::writableLocation(QStandardPaths::DesktopLocation));
+
+    QString pathOutCSV = QFileDialog::getSaveFileName(this, "Сохранение", defaultPath);
 
     if(pathOutCSV.isEmpty())
     {
