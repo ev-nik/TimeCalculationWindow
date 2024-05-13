@@ -436,11 +436,11 @@ void MainWindow::reloadData()
 
 void MainWindow::saveInfoCSV()
 {
-    // @TODO: добавить имя базового файла в путь сохранения
+    QFileInfo fileInfo(pathIn);
+    QString   fileName = fileInfo.baseName();
 
-    QString defaultPath = QString("%1/Temper-out.csv").arg(QStandardPaths::writableLocation(QStandardPaths::DesktopLocation));
-
-    QString pathOutCSV = QFileDialog::getSaveFileName(this, "Сохранение", defaultPath);
+    QString defaultPath = QString("%1/%2-out.csv").arg(QStandardPaths::writableLocation(QStandardPaths::DesktopLocation)).arg(fileName);
+    QString pathOutCSV  = QFileDialog::getSaveFileName(this, "Сохранение", defaultPath);
 
     if(pathOutCSV.isEmpty())
     {
@@ -486,16 +486,25 @@ void MainWindow::saveInfoCSV()
     writeStream << strTable;
     fileOut.close();
 
-    // @TODO: Добавить QMessageBox на открытие файла
+    QMessageBox::StandardButton clickedButton = QMessageBox::information(this,
+                                                                         "Информация",
+                                                                         QString("Файл успешно сохранен.\nОткрыть его?"),
+                                                                         QMessageBox::Open,
+                                                                         QMessageBox::Close);
+
+    if(clickedButton == QMessageBox::Open)
+    {
+        QDesktopServices::openUrl( QUrl::fromLocalFile(pathOutCSV) );
+    }
 }
 //------------------------------------------------------------------------------------
 
 void MainWindow::saveInfoHTML()
 {
-    // @TODO: добавить имя базового файла в путь сохранения
+    QFileInfo fileInfo(pathIn);
+    QString   fileName = fileInfo.baseName();
 
-    QString defaultPath = QString("%1/Temper-out.html").arg(QStandardPaths::writableLocation(QStandardPaths::DesktopLocation));
-
+    QString defaultPath = QString("%1/%2-out.html").arg(QStandardPaths::writableLocation(QStandardPaths::DesktopLocation)).arg(fileName);
     QString pathOutHTML = QFileDialog::getSaveFileName(this, "Сохранение", defaultPath);
 
     if(pathOutHTML.isEmpty())
